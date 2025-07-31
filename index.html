@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Programação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .answer-option:hover {
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        .correct {
+            background-color: #d1fae5;
+            border-left: 4px solid #10b981;
+        }
+        .incorrect {
+            background-color: #fee2e2;
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center py-12 px-4">
+    <div class="w-full max-w-3xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Quiz de Programação</h1>
+            <p class="text-gray-600">Teste seus conhecimentos sobre conceitos fundamentais de programação</p>
+        </header>
 
+        <div class="bg-white rounded-xl shadow-md overflow-hidden question-card mb-8">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4" id="question-text">Qual é o conceito de uma variável em programação?</h2>
+                
+                <div class="space-y-3">
+                    <div class="answer-option p-4 rounded-md border border-gray-200" onclick="checkAnswer(this, 0)" data-correct="true">
+                        Um nome simbólico que representa um valor que pode ser modificado durante a execução do programa
+                    </div>
+                    <div class="answer-option p-4 rounded-md border border-gray-200" onclick="checkAnswer(this, 0)">
+                        Um bloco de código que executa uma tarefa específica
+                    </div>
+                    <div class="answer-option p-4 rounded-md border border-gray-200" onclick="checkAnswer(this, 0)">
+                        Um valor constante que não pode ser alterado
+                    </div>
+                    <div class="answer-option p-4 rounded-md border border-gray-200" onclick="checkAnswer(this, 0)">
+                        Um tipo de estrutura de dados que armazena múltiplos valores
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md overflow-hidden question-card mb-8">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4" id="question-text">Qual destes NÃO é um tipo de dado primitivo em JavaScript?</h2>
+                
+                <div class="space-y-3">
+                    <div class="answer-option p-4 rounded-md border border-gray-200" onclick="checkAnswer(this, 1)">
+                        number
+                    </div>
+                    <div class="answer-option p-4 rounded-md border border-gray-200" onclick="checkAnswer(this, 1)">
+                        string
+                    </div>
+                    <div class="answer-option p-4 rounded-md border border-gray-200" onclick="checkAnswer(this, 1)" data-correct="true">
+                        array
+                    </div>
+                    <div class="answer-option p-4 rounded-md border border-gray-200" onclick="checkAnswer(this, 1)">
+                        boolean
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Objetos que representam as perguntas do quiz
+        const questions = [
+            {
+                question: "Qual é o conceito de uma variável em programação?",
+                options: [
+                    "Um nome simbólico que representa um valor que pode ser modificado durante a execução do programa",
+                    "Um bloco de código que executa uma tarefa específica",
+                    "Um valor constante que não pode ser alterado",
+                    "Um tipo de estrutura de dados que armazena múltiplos valores"
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Qual destes NÃO é um tipo de dado primitivo em JavaScript?",
+                options: [
+                    "number",
+                    "string",
+                    "array",
+                    "boolean"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "O que significa a sigla HTML?",
+                options: [
+                    "Hyperlinks and Text Markup Language",
+                    "Home Tool Markup Language",
+                    "Hyper Text Markup Language",
+                    "Hyper Text Making Links"
+                ],
+                correctAnswer: 2
+            }
+        ];
+
+        // Função para verificar a resposta selecionada
+        function checkAnswer(element, questionIndex) {
+            const options = document.querySelectorAll(`[onclick^="checkAnswer(this, ${questionIndex})"]`);
+            const correctIndex = questions[questionIndex].correctAnswer;
+            
+            options.forEach((option, index) => {
+                option.classList.remove('correct', 'incorrect');
+                if (index === correctIndex) {
+                    option.classList.add('correct');
+                    if (element === option) {
+                        showFeedback("Resposta correta! 🎉", true);
+                    }
+                } else if (element === option) {
+                    option.classList.add('incorrect');
+                    showFeedback(`Resposta incorreta. A correta é: ${questions[questionIndex].options[correctIndex]}`, false);
+                }
+            });
+        }
+
+        // Função para exibir feedback
+        function showFeedback(message, isCorrect) {
+            const feedback = document.createElement('div');
+            feedback.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 rounded-md ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            feedback.textContent = message;
+            document.body.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 3000);
+        }
+
+        // Carrega as perguntas na página
+        function loadQuestions() {
+            const questionCards = document.querySelectorAll('.question-card');
+            
+            questions.forEach((question, index) => {
+                if (questionCards[index]) {
+                    const questionText = questionCards[index].querySelector('#question-text');
+                    const optionsContainer = questionCards[index].querySelector('.space-y-3');
+                    
+                    questionText.textContent = question.question;
+                    optionsContainer.innerHTML = '';
+                    
+                    question.options.forEach((option, optionIndex) => {
+                        const optionElement = document.createElement('div');
+                        optionElement.className = 'answer-option p-4 rounded-md border border-gray-200';
+                        optionElement.textContent = option;
+                        optionElement.onclick = function() { checkAnswer(this, index); };
+                        if (optionIndex === question.correctAnswer) {
+                            optionElement.dataset.correct = "true";
+                        }
+                        optionsContainer.appendChild(optionElement);
+                    });
+                }
+            });
+        }
+
+        // Inicializa o quiz quando a página carrega
+        window.onload = loadQuestions;
+    </script>
+</body>
+</html>
+
+```
